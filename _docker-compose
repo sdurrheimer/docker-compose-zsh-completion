@@ -2,9 +2,9 @@
 
 # Description
 # -----------
-# 
+#
 #  zsh completion for docker-compose
-# 
+#
 # -------------------------------------------------------------------------
 # Version
 # -------
@@ -17,7 +17,7 @@
 #
 #  * Steve Durrheimer <s.durrheimer@gmail.com>
 #
-# ------------------------------------------------------------------------- 
+# -------------------------------------------------------------------------
 
 # Extracts all service names from docker-compose.yml.
 ___docker-compose_all_services_in_compose_file() {
@@ -236,7 +236,7 @@ _docker-compose () {
     typeset -A opt_args
 
     _arguments -C \
-        '(- :)'{-h,--help}'[]' \
+        '(- :)'{-h,--help}'[Get help]' \
         '--verbose[Show more output]' \
         '(- :)--version[Print version and exit]' \
         {-f,--file}'[Specify an alternate docker-compose file (default: docker-compose.yml)]:file:_files -g "*.yml"' \
@@ -276,4 +276,3 @@ _docker-compose () {
 }
 
 _docker-compose "$@"
-
