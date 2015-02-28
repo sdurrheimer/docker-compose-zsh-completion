@@ -153,7 +153,7 @@ __docker-compose_subcommand () {
             ;;
         (kill)
             _arguments \
-                {-s,--signal=-}'[Signal to send]:signal:_signals' \
+                {-s,--signal=-}'[SIGNAL to send to the container. Default signal is SIGKILL.]:signal:_signals' \
                 '*:running services:__docker-compose_runningservices' && ret=0
             ;;
         (logs)
@@ -191,7 +191,7 @@ __docker-compose_subcommand () {
                 '--entrypoint=-[Overwrite the entrypoint of the image.]:entry point: ' \
                 '*-e+[KEY=VAL Set an environment variable (can be used multiple times)]:environment variable: ' \
                 "--no-deps[Don't start linked services.]" \
-                '--rm[Remove intermediate containers when it exits]' \
+                '--rm[Remove container after run. Ignored in detached mode.]' \
                 "--service-ports[Run command with the service's ports enabled and mapped to the host.]" \
                 '-T[Disable pseudo-tty allocation. By default `docker-compose run` allocates a TTY.]' \
                 '(-):services:__docker-compose_services' \
