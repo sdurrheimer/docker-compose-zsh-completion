@@ -192,7 +192,7 @@ __docker-compose_subcommand () {
             ;;
         (rm)
             _arguments \
-                "--force[Don't ask to confirm removal]" \
+                {-f,--force}"[Don't ask to confirm removal]" \
                 '-v[Remove volumes associated with containers]' \
                 '*:stopped services:__docker-compose_stoppedservices' && ret=0
             ;;
