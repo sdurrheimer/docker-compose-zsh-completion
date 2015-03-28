@@ -197,7 +197,7 @@ __docker-compose_subcommand () {
             ;;
         (rm)
             _arguments \
-                {-f,--force}"[Don't ask to confirm removal]" \
+                '(-f --force)'{-f,--force}"[Don't ask to confirm removal]" \
                 '-v[Remove volumes associated with containers]' \
                 '*:stopped services:__docker-compose_stoppedservices' && ret=0
             ;;
@@ -207,7 +207,7 @@ __docker-compose_subcommand () {
                 '-d[Detached mode: Run container in the background, print new container name.]' \
                 '--entrypoint[Overwrite the entrypoint of the image.]:entry point: ' \
                 '*-e[KEY=VAL Set an environment variable (can be used multiple times)]:environment variable KEY=VAL: ' \
-                {-u,--user=-}'[Run as specified username or uid]:username or uid:_users' \
+                '(-u --user)'{-u,--user=-}'[Run as specified username or uid]:username or uid:_users' \
                 "--no-deps[Don't start linked services.]" \
                 '--rm[Remove container after run. Ignored in detached mode.]' \
                 "--service-ports[Run command with the service's ports enabled and mapped to the host.]" \
@@ -224,7 +224,7 @@ __docker-compose_subcommand () {
             ;;
         (stop|restart)
             _arguments \
-                {-t,--timeout}"[Specify a shutdown timeout in seconds. (default: 10)]:seconds: " \
+                '(-t --timeout)'{-t,--timeout}"[Specify a shutdown timeout in seconds. (default: 10)]:seconds: " \
                 '*:running services:__docker-compose_runningservices' && ret=0
             ;;
         (up)
@@ -235,7 +235,7 @@ __docker-compose_subcommand () {
                 "--no-deps[Don't start linked services.]" \
                 "--no-recreate[If containers already exist, don't recreate them.]" \
                 "--no-build[Don't build an image, even if it's missing]" \
-                {-t,--timeout}"[Specify a shutdown timeout in seconds. (default: 10)]:seconds: " \
+                '(-t --timeout)'{-t,--timeout}"[Specify a shutdown timeout in seconds. (default: 10)]:seconds: " \
                 '*:services:__docker-compose_services_all' && ret=0
             ;;
         (*)
@@ -260,8 +260,8 @@ _docker-compose () {
         '(- :)'{-h,--help}'[Get help]' \
         '--verbose[Show more output]' \
         '(- :)--version[Print version and exit]' \
-        {-f,--file}'[Specify an alternate docker-compose file (default: docker-compose.yml)]:file:_files -g "*.yml"' \
-        {-p,--project-name}'[Specify an alternate project name (default: directory name)]:project name:' \
+        '(-f --file)'{-f,--file}'[Specify an alternate docker-compose file (default: docker-compose.yml)]:file:_files -g "*.yml"' \
+        '(-p --project-name)'{-p,--project-name}'[Specify an alternate project name (default: directory name)]:project name:' \
         '(-): :->command' \
         '(-)*:: :->option-or-argument' && ret=0
 
