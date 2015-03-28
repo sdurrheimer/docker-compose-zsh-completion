@@ -77,12 +77,12 @@ __docker-compose_get_services() {
         _message "Error! Docker is not running."
         return 1
     fi
-    
+
     kind=$1
     shift
     [[ $kind = (stopped|all) ]] && args=($args -a)
 
-    lines=(${(f)"$(_call_program commands docker ps ${args})"}) 
+    lines=(${(f)"$(_call_program commands docker ps ${args})"})
     services=(${(f)"$(_call_program commands docker-compose 2>/dev/null ${compose_file:+-f $compose_file} ${compose_project:+-p $compose_project} ps -q)"})
 
     # Parse header line to find columns
@@ -170,7 +170,7 @@ __docker-compose_subcommand () {
             ;;
         (kill)
             _arguments \
-                {-s,--signal=-}'[SIGNAL to send to the container. Default signal is SIGKILL.]:signal:_signals' \
+                '-s[SIGNAL to send to the container. Default signal is SIGKILL.]:signal:_signals' \
                 '*:running services:__docker-compose_runningservices' && ret=0
             ;;
         (logs)
@@ -181,7 +181,7 @@ __docker-compose_subcommand () {
         (port)
             _arguments \
                 '--protocol=-[tcp or udap (defaults to tcp)]:protocol:(tcp udp)' \
-                '--index=-[index of the container if there are mutiple instances of a service (defaults to 1)]' \
+                '--index=-[index of the container if there are mutiple instances of a service (defaults to 1)]:index: ' \
                 '1:running services:__docker-compose_runningservices' \
                 '2:port:_ports' && ret=0
             ;;
@@ -205,8 +205,9 @@ __docker-compose_subcommand () {
             _arguments \
                 '--allow-insecure-ssl[Allow insecure connections to the docker registry]' \
                 '-d[Detached mode: Run container in the background, print new container name.]' \
-                '--entrypoint=-[Overwrite the entrypoint of the image.]:entry point: ' \
-                '*-e+[KEY=VAL Set an environment variable (can be used multiple times)]:environment variable: ' \
+                '--entrypoint[Overwrite the entrypoint of the image.]:entry point: ' \
+                '*-e[KEY=VAL Set an environment variable (can be used multiple times)]:environment variable KEY=VAL: ' \
+                {-u,--user=-}'[Run as specified username or uid]:username or uid:_users' \
                 "--no-deps[Don't start linked services.]" \
                 '--rm[Remove container after run. Ignored in detached mode.]' \
                 "--service-ports[Run command with the service's ports enabled and mapped to the host.]" \
@@ -222,7 +223,9 @@ __docker-compose_subcommand () {
             _arguments '*:stopped services:__docker-compose_stoppedservices' && ret=0
             ;;
         (stop|restart)
-            _arguments '*:running services:__docker-compose_runningservices' && ret=0
+            _arguments \
+                {-t,--timeout}"[Specify a shutdown timeout in seconds. (default: 10)]:seconds: " \
+                '*:running services:__docker-compose_runningservices' && ret=0
             ;;
         (up)
             _arguments \
@@ -232,6 +235,7 @@ __docker-compose_subcommand () {
                 "--no-deps[Don't start linked services.]" \
                 "--no-recreate[If containers already exist, don't recreate them.]" \
                 "--no-build[Don't build an image, even if it's missing]" \
+                {-t,--timeout}"[Specify a shutdown timeout in seconds. (default: 10)]:seconds: " \
                 '*:services:__docker-compose_services_all' && ret=0
             ;;
         (*)
