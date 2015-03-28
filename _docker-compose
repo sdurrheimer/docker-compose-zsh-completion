@@ -261,7 +261,7 @@ _docker-compose () {
         '--verbose[Show more output]' \
         '(- :)--version[Print version and exit]' \
         {-f,--file}'[Specify an alternate docker-compose file (default: docker-compose.yml)]:file:_files -g "*.yml"' \
-        {-p,--project-name}'+[Specify an alternate project name (default: directory name)]:project name:' \
+        {-p,--project-name}'[Specify an alternate project name (default: directory name)]:project name:' \
         '(-): :->command' \
         '(-)*:: :->option-or-argument' && ret=0
 
