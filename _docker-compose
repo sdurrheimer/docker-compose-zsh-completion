@@ -217,7 +217,7 @@ __docker-compose_subcommand () {
                 '*::arguments: _normal' && ret=0
             ;;
         (scale)
-            _arguments '*=-:running services:__docker-compose_runningservices' && ret=0
+            _arguments '*:running services:__docker-compose_runningservices' && ret=0
             ;;
         (start)
             _arguments '*:stopped services:__docker-compose_stoppedservices' && ret=0
