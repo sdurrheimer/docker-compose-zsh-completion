@@ -1,5 +1,7 @@
 # docker-compose-zsh-completion
 
+__UPDATES__ : Zsh completion has been merged in the docker-compose official repository. I will try to keep this repo updated with the official one.
+
 A zsh completion for [docker-compose](https://github.com/docker/compose)
 
 ## How to Install
