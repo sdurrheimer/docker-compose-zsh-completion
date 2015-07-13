@@ -37,7 +37,7 @@ __docker-compose_compose_file() {
 ___docker-compose_all_services_in_compose_file() {
     local already_selected
     local -a services
-    already_selected=$(echo "${words[@]}" | tr " " "|")
+    already_selected=$(echo $words | tr " " "|")
     awk -F: '/^[a-zA-Z0-9]/{print $1}' "${compose_file:-$(__docker-compose_compose_file)}" 2>/dev/null | grep -Ev "$already_selected"
 }
 
@@ -51,7 +51,7 @@ __docker-compose_services_all() {
 ___docker-compose_services_with_key() {
     local already_selected
     local -a buildable
-    already_selected=$(echo "${words[@]}" | tr " " "|")
+    already_selected=$(echo $words | tr " " "|")
     # flatten sections to one line, then filter lines containing the key and return section name.
     awk '/^[a-zA-Z0-9]/{printf "\n"};{printf $0;next;}' "${compose_file:-$(__docker-compose_compose_file)}" 2>/dev/null | awk -F: -v key=": +$1:" '$0 ~ key {print $1}' 2>/dev/null | grep -Ev "$already_selected"
 }
@@ -80,18 +80,18 @@ __docker-compose_get_services() {
 
     kind=$1
     shift
-    [[ $kind =~ (stopped|all) ]] && args=(${args[@]} -a)
+    [[ $kind =~ (stopped|all) ]] && args=($args -a)
 
-    lines=(${(f)"$(_call_program commands docker ps "${args[@]}")"})
+    lines=(${(f)"$(_call_program commands docker ps $args)"})
     services=(${(f)"$(_call_program commands docker-compose 2>/dev/null "${compose_file:+-f $compose_file}" "${compose_project:+-p $compose_project}" ps -q)"})
 
     # Parse header line to find columns
     local i=1 j=1 k header=${lines[1]}
     declare -A begin end
     while (( j < ${#header} - 1 )); do
-        i=$(( j + ${${header[$j,-1]}[(i)[^ ]]} - 1))
-        j=$(( i + ${${header[$i,-1]}[(i)  ]} - 1))
-        k=$(( j + ${${header[$j,-1]}[(i)[^ ]]} - 2))
+        i=$(( j + ${${header[$j,-1]}[(i)[^ ]]} - 1 ))
+        j=$(( i + ${${header[$i,-1]}[(i)  ]} - 1 ))
+        k=$(( j + ${${header[$j,-1]}[(i)[^ ]]} - 2 ))
         begin[${header[$i,$((j-1))]}]=$i
         end[${header[$i,$((j-1))]}]=$k
     done
@@ -100,17 +100,17 @@ __docker-compose_get_services() {
     # Container ID
     local line s name
     local -a names
-    for line in "${lines[@]}"; do
+    for line in $lines; do
         if [[ ${services[@]} == *"${line[${begin[CONTAINER ID]},${end[CONTAINER ID]}]%% ##}"* ]]; then
             names=(${(ps:,:)${${line[${begin[NAMES]},-1]}%% *}})
-            for name in "${names[@]}"; do
+            for name in $names; do
                 s="${${name%_*}#*_}:${(l:15:: :::)${${line[${begin[CREATED]},${end[CREATED]}]/ ago/}%% ##}}"
                 s="$s, ${line[${begin[CONTAINER ID]},${end[CONTAINER ID]}]%% ##}"
                 s="$s, ${${${line[${begin[IMAGE]},${end[IMAGE]}]}/:/\\:}%% ##}"
                 if [[ ${line[${begin[STATUS]},${end[STATUS]}]} = Exit* ]]; then
-                    stopped=(${stopped[@]} $s)
+                    stopped=($stopped $s)
                 else
-                    running=(${running[@]} $s)
+                    running=($running $s)
                 fi
             done
         fi
@@ -253,7 +253,7 @@ _docker-compose () {
     # Support for subservices, which allows for `compdef _docker docker-shell=_docker_containers`.
     # Based on /usr/share/zsh/functions/Completion/Unix/_git without support for `ret`.
     if [[ $service != docker-compose ]]; then
-        _call_function - "_$service"
+        _call_function - _$service
         return
     fi
 
@@ -271,7 +271,7 @@ _docker-compose () {
 
     local counter=1
     #local compose_file compose_project
-    while [ $counter -lt ${#words[@]} ]; do
+    while [ $counter -lt ${#words} ]; do
         case "${words[$counter]}" in
             -f|--file)
                 (( counter++ ))
@@ -292,7 +292,7 @@ _docker-compose () {
             __docker-compose_commands && ret=0
             ;;
         (option-or-argument)
-            curcontext="${curcontext%:*:*}:docker-compose-$words[1]:"
+            curcontext=${curcontext%:*:*}:docker-compose-$words[1]:
             __docker-compose_subcommand && ret=0
             ;;
     esac
