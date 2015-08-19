@@ -43,6 +43,7 @@ ___docker-compose_all_services_in_compose_file() {
 
 # All services, even those without an existing container
 __docker-compose_services_all() {
+    [[ $PREFIX = -* ]] && return 1
     integer ret=1
     services=$(___docker-compose_all_services_in_compose_file)
     _alternative "args:services:($services)" && ret=0
@@ -61,6 +62,7 @@ ___docker-compose_services_with_key() {
 
 # All services that are defined by a Dockerfile reference
 __docker-compose_services_from_build() {
+    [[ $PREFIX = -* ]] && return 1
     integer ret=1
     buildable=$(___docker-compose_services_with_key build)
     _alternative "args:buildable services:($buildable)" && ret=0
@@ -70,6 +72,7 @@ __docker-compose_services_from_build() {
 
 # All services that are defined by an image
 __docker-compose_services_from_image() {
+    [[ $PREFIX = -* ]] && return 1
     integer ret=1
     pullable=$(___docker-compose_services_with_key image)
     _alternative "args:pullable services:($pullable)" && ret=0
@@ -78,6 +81,7 @@ __docker-compose_services_from_image() {
 }
 
 __docker-compose_get_services() {
+    [[ $PREFIX = -* ]] && return 1
     integer ret=1
     local kind
     declare -a running stopped lines args services
@@ -133,14 +137,17 @@ __docker-compose_get_services() {
 }
 
 __docker-compose_stoppedservices() {
+    [[ $PREFIX = -* ]] && return 1
     __docker-compose_get_services stopped "$@"
 }
 
 __docker-compose_runningservices() {
+    [[ $PREFIX = -* ]] && return 1
     __docker-compose_get_services running "$@"
 }
 
 __docker-compose_services() {
+    [[ $PREFIX = -* ]] && return 1
     __docker-compose_get_services all "$@"
 }
 
