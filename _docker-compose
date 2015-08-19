@@ -83,7 +83,7 @@ __docker-compose_get_services() {
     [[ $kind =~ (stopped|all) ]] && args=($args -a)
 
     lines=(${(f)"$(_call_program commands docker ps $args)"})
-    services=(${(f)"$(_call_program commands docker-compose 2>/dev/null "${compose_file:+-f $compose_file}" "${compose_project:+-p $compose_project}" ps -q)"})
+    services=(${(f)"$(_call_program commands docker-compose 2>/dev/null $compose_options ps -q)"})
 
     # Parse header line to find columns
     local i=1 j=1 k header=${lines[1]}
@@ -281,6 +281,7 @@ _docker-compose () {
 
     local curcontext="$curcontext" state line
     integer ret=1
+    typeset -A opt_args
 
     _arguments -C \
         '(- :)'{-h,--help}'[Get help]' \
@@ -291,23 +292,9 @@ _docker-compose () {
         '(-): :->command' \
         '(-)*:: :->option-or-argument' && ret=0
 
-    local counter=1
-    #local compose_file compose_project
-    while [ $counter -lt ${#words} ]; do
-        case "${words[$counter]}" in
-            -f|--file)
-                (( counter++ ))
-                compose_file="${words[$counter]}"
-                ;;
-            -p|--project-name)
-                (( counter++ ))
-                compose_project="${words[$counter]}"
-                ;;
-            *)
-                ;;
-        esac
-        (( counter++ ))
-    done
+    local compose_file=${opt_args[-f]}${opt_args[--file]}
+    local compose_project=${opt_args[-p]}${opt_args[--project-name]}
+    local compose_options="${compose_file:+--file $compose_file} ${compose_project:+--project-name $compose_project}"
 
     case $state in
         (command)
