@@ -84,7 +84,7 @@ __docker-compose_get_services() {
     [[ $PREFIX = -* ]] && return 1
     integer ret=1
     local kind
-    declare -a running stopped lines args services
+    declare -a running paused stopped lines args services
 
     docker_status=$(docker ps > /dev/null 2>&1)
     if [ $? -ne 0 ]; then
@@ -124,6 +124,9 @@ __docker-compose_get_services() {
                 if [[ ${line[${begin[STATUS]},${end[STATUS]}]} = Exit* ]]; then
                     stopped=($stopped $s)
                 else
+                    if [[  ${line[${begin[STATUS]},${end[STATUS]}]} = *\(Paused\)* ]]; then
+                        paused=($paused $s)
+                    fi
                     running=($running $s)
                 fi
             done
@@ -131,9 +134,15 @@ __docker-compose_get_services() {
     done
 
     [[ $kind =~ (running|all) ]] && _describe -t services-running "running services" running "$@" && ret=0
+    [[ $kind =~ (paused|all) ]] && _describe -t services-paused "paused services" paused "$@" && ret=0
     [[ $kind =~ (stopped|all) ]] && _describe -t services-stopped "stopped services" stopped "$@" && ret=0
 
     return ret
+}
+
+__docker-compose_pausedservices() {
+    [[ $PREFIX = -* ]] && return 1
+    __docker-compose_get_services paused "$@"
 }
 
 __docker-compose_stoppedservices() {
@@ -206,6 +215,11 @@ __docker-compose_subcommand() {
                 $opts_help \
                 '(-):Recreate containers to add labels' && ret=0
             ;;
+        (pause)
+            _arguments \
+                $opts_help \
+                '*:running services:__docker-compose_runningservices' && ret=0
+            ;;
         (port)
             _arguments \
                 $opts_help \
@@ -264,6 +278,11 @@ __docker-compose_subcommand() {
                 $opts_help \
                 '(-t --timeout)'{-t,--timeout}"[Specify a shutdown timeout in seconds. (default: 10)]:seconds: " \
                 '*:running services:__docker-compose_runningservices' && ret=0
+            ;;
+        (unpause)
+            _arguments \
+                $opts_help \
+                '*:paused services:__docker-compose_pausedservices' && ret=0
             ;;
         (up)
             _arguments \
