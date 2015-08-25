@@ -242,6 +242,7 @@ __docker-compose_subcommand() {
                 "--no-deps[Don't start linked services.]" \
                 '--rm[Remove container after run. Ignored in detached mode.]' \
                 "--service-ports[Run command with the service's ports enabled and mapped to the host.]" \
+                '(-p --publish)'{-p,--publish=-}"[Run command with manually mapped container's port(s) to the host.]" \
                 '-T[Disable pseudo-tty allocation. By default `docker-compose run` allocates a TTY.]' \
                 '(-):services:__docker-compose_services' \
                 '(-):command: _command_names -e' \
