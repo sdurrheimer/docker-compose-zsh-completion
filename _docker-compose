@@ -192,7 +192,8 @@ __docker-compose_subcommand() {
         (build)
             _arguments \
                 $opts_help \
-                '--no-cache[Do not use cache when building the image]' \
+                '--no-cache[Do not use cache when building the image.]' \
+                '--pull[Always attempt to pull a newer version of the image.]' \
                 '*:services:__docker-compose_services_from_build' && ret=0
             ;;
         (help)
